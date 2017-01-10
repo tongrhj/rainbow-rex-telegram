@@ -1,36 +1,58 @@
-'use strict'
-
 // var dotenv = require('dotenv').config()
 var TelegramBot = require('node-telegram-bot-api')
-var dotenv = require('dotenv').config()
 
-// replace the value below with the Telegram token you receive from @BotFather
 var TOKEN = process.env.TELEGRAM_BOT_TOKEN
 
-// Create a bot that uses 'polling' to fetch new updates
-var bot = new TelegramBot(TOKEN, { polling: true })
+// Polling: false, we use webhooks instead
+var bot = new TelegramBot(TOKEN, { polling: false })
 
 var GAME_SHORT_NAME = 'rainbowrex'
 
-// Matches "/start"
-bot.onText(/\/start/, function (msg) {
+function sendGame (event, lambdaCallback) {
+  // parse the chat ID so we can respond
+  var chatId = event.body.message.chat.id
+
   bot.sendGame(
-    msg.from.id,
+    event.body.message.from.id,
     GAME_SHORT_NAME
-  )
-})
+  ).then(function () {
+    lambdaCallback(null, '')
+  }).catch(function (error) {
+    console.log(error)
+  })
+}
 
-bot.on('callback_query', function(cq) {
+function startGame (event, lambdaCallback) {
+  var cq = event.body.callback_query
+  var msgId = cq.message.message_id
+  var chatId = cq.message.chat.id
+  var userId = cq.from.id
+  var gameUrlWithParams = 'https://rainbowrex.surge.sh/?userId=' + userId + '&chatId=' + chatId + '&msgId=' + msgId
+
   if (cq.game_short_name && cq.game_short_name === GAME_SHORT_NAME) {
-    bot.answerCallbackQuery(cq.id, undefined, false, { url: 'https://rainbowrex.surge.sh' })
+    bot.answerCallbackQuery(
+      cq.id,
+      undefined,
+      false,
+      { url: gameUrlWithParams }
+    ).then(function () {
+      lambdaCallback(null, '')
+    }).catch(function (error) {
+      console.log(error)
+    })
   } else {
-    bot.answerCallbackQuery(cq.id, "Sorry, '" + cq.game_short_name + "' is not available.", true)
+    bot.answerCallbackQuery(
+      cq.id,
+      "Sorry, '" + cq.game_short_name + "' is not available.", true
+    ).then(function () {
+      lambdaCallback(null, '')
+    }).catch(function (error) {
+      console.log(error)
+    })
   }
-})
+}
 
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on('message', function (msg) {
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(msg.chat.id, "console.log(Input received)")
-})
+exports.handler = function (event, context, lambdaCallback) {
+  if (event.body.message) sendGame(event, lambdaCallback)
+  if (event.body.callback_query) startGame(event, lambdaCallback)
+}

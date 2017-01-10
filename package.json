@@ -1,18 +1,14 @@
 {
   "name": "rainbow-rex-telegram",
   "version": "1.0.0",
-  "description": "",
+  "description": "AWS Lambda Telegram Bot to launch Rainbow Rex game",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "author": "",
+  "author": "Jared Tong <hello@jaredtong.com>",
   "license": "ISC",
-  "devDependencies": {
-    "node-telegram-bot-api": "^0.25.0"
-  },
   "dependencies": {
-    "dotenv": "^2.0.0"
+    "node-telegram-bot-api": "^0.25.0"
   }
 }
