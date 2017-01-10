@@ -31,3 +31,6 @@ public
 
 # Ignore dotenv files
 .env
+
+# Ignore zip for AWS Lambda
+*.zip
