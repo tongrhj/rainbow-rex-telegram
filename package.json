@@ -9,6 +9,6 @@
   "author": "Jared Tong <hello@jaredtong.com>",
   "license": "ISC",
   "dependencies": {
-    "node-telegram-bot-api": "^0.25.0"
+    "node-telegram-bot-api": "^0.27.0"
   }
 }
